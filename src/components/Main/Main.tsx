@@ -1,32 +1,50 @@
 import { useState } from "react";
 import Card from "../../components/Card/Card";
-import { createDeck } from "../../utils/deck";
+import { createWinningShuffle, dealCards } from "../../utils/deck";
+import styles from "./Main.module.scss";
+import ControlButtons from "../ControlButtons/ControlButtons";
 
 const Main = () => {
-  const [deck, setDeck] = useState(createDeck());
+  const [deck, setDeck] = useState(createWinningShuffle());
+  const tableau = dealCards(deck);
+
+  const handleCardClick = (stackIndex: number, cardIndex: number) => {
+    console.log(`Clicked card ${cardIndex} in stack ${stackIndex}`);
+  };
 
   return (
-    <main>
-      <div>
-        <button></button>
-        <button></button>
-        <button></button>
-        <button></button>
-      </div>
-
-      <div></div>
+    <main className={styles.main}>
+      <ControlButtons />
 
       <div className={styles.game__field}>
+        {tableau.map((stack, stackIndex) => (
+          <div key={stackIndex} className={styles.stack}>
+            {stack.map((card, cardIndex) => (
+              <Card
+                key={cardIndex}
+                suit={card.suit}
+                rank={card.rank}
+                image={card.image}
+                isFaceUp={card.isFaceUp}
+                onClick={() => handleCardClick(stackIndex, cardIndex)}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* <div>
         {deck.map((card, index) => (
           <Card
             key={index}
             suit={card.suit}
             rank={card.rank}
             image={card.image}
+            isFaceUp={card.isFaceUp}
             onClick={() => console.log(`${card.rank} of ${card.suit}`)}
           />
         ))}
-      </div>
+      </div> */}
     </main>
   );
 };

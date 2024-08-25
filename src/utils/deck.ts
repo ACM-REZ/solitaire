@@ -74,6 +74,7 @@ interface Card {
   suit: Suit;
   rank: Rank;
   image: string;
+  isFaceUp: boolean;
 }
 
 const cardImages: Record<Suit, Record<Rank, string>> = {
@@ -162,6 +163,44 @@ export function createDeck(): Card[] {
       suit,
       rank,
       image: cardImages[suit][rank],
+      isFaceUp: false,
     }))
   );
+}
+
+function shuffle(deck: Card[]): Card[] {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function isWinningDeal(deck: Card[]): boolean {
+  return true;
+}
+
+export function createWinningShuffle(): Card[] {
+  let deck = createDeck();
+  let shuffledDeck = shuffle(deck);
+
+  while (!isWinningDeal(shuffledDeck)) {
+    shuffledDeck = shuffle(deck);
+  }
+
+  return shuffledDeck;
+}
+
+export function dealCards(shuffledDeck: Card[]): Card[][] {
+  const tableau: Card[][] = [];
+
+  for (let i = 0; i < 7; i++) {
+    tableau[i] = shuffledDeck.slice(0, i + 1).map((card, index) => ({
+      ...card,
+      isFaceUp: index === i,
+    }));
+    shuffledDeck = shuffledDeck.slice(i + 1);
+  }
+
+  return tableau;
 }
