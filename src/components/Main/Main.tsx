@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import Card from "../../components/Card/Card";
 import { createWinningShuffle, dealCards } from "../../utils/deck";
 import styles from "./Main.module.scss";
 import ControlButtons from "../ControlButtons/ControlButtons";
+import { useAppDispatch, useAppSelector } from "../../app/store";
+import { updateGameState } from "../../entities/game/model/gameSlice";
+import { CardType } from "../../entities/game/types/game";
 
 const Main = () => {
-  const [deck, setDeck] = useState(createWinningShuffle());
-  const tableau = dealCards(deck);
+  const dispatch = useAppDispatch();
+
+  const { deck, columns } = useAppSelector((state) => state.game);
+
+  useEffect(() => {
+    const newDeck = createWinningShuffle();
+    dispatch(updateGameState({ deck: newDeck }));
+
+    const newColumns = dealCards(newDeck);
+    dispatch(updateGameState({ columns: newColumns }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log(deck);
+    console.log(columns);
+  }, [deck, columns]);
 
   const handleCardClick = (stackIndex: number, cardIndex: number) => {
     console.log(`Clicked card ${cardIndex} in stack ${stackIndex}`);
@@ -17,9 +34,9 @@ const Main = () => {
       <ControlButtons />
 
       <div className={styles.game__field}>
-        {tableau.map((stack, stackIndex) => (
+        {columns.map((stack: CardType[], stackIndex: number) => (
           <div key={stackIndex} className={styles.stack}>
-            {stack.map((card, cardIndex) => (
+            {stack.map((card: CardType, cardIndex: number) => (
               <Card
                 key={cardIndex}
                 suit={card.suit}
@@ -33,8 +50,8 @@ const Main = () => {
         ))}
       </div>
 
-      {/* <div>
-        {deck.map((card, index) => (
+      <div>
+        {/* {deck.map((card: Card, index: number) => (
           <Card
             key={index}
             suit={card.suit}
@@ -43,8 +60,8 @@ const Main = () => {
             isFaceUp={card.isFaceUp}
             onClick={() => console.log(`${card.rank} of ${card.suit}`)}
           />
-        ))}
-      </div> */}
+        ))} */}
+      </div>
     </main>
   );
 };

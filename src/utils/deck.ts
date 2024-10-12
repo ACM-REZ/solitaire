@@ -53,29 +53,7 @@ import tenOfSpades from "../assets/cards/10_of_spades.png";
 import jackOfSpades from "../assets/cards/jack_of_spades.png";
 import queenOfSpades from "../assets/cards/queen_of_spades.png";
 import kingOfSpades from "../assets/cards/king_of_spades.png";
-
-type Suit = "hearts" | "diamonds" | "clubs" | "spades";
-type Rank =
-  | "ace"
-  | "2"
-  | "3"
-  | "4"
-  | "5"
-  | "6"
-  | "7"
-  | "8"
-  | "9"
-  | "10"
-  | "jack"
-  | "queen"
-  | "king";
-
-interface Card {
-  suit: Suit;
-  rank: Rank;
-  image: string;
-  isFaceUp: boolean;
-}
+import { CardType, Rank, Suit } from "../entities/game/types/game";
 
 const cardImages: Record<Suit, Record<Rank, string>> = {
   hearts: {
@@ -140,7 +118,7 @@ const cardImages: Record<Suit, Record<Rank, string>> = {
   },
 };
 
-export function createDeck(): Card[] {
+export function createDeck(): CardType[] {
   const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"];
   const ranks: Rank[] = [
     "ace",
@@ -168,7 +146,7 @@ export function createDeck(): Card[] {
   );
 }
 
-function shuffle(deck: Card[]): Card[] {
+function shuffle(deck: CardType[]): CardType[] {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -176,12 +154,15 @@ function shuffle(deck: Card[]): Card[] {
   return deck;
 }
 
-function isWinningDeal(deck: Card[]): boolean {
+function isWinningDeal(deck: CardType[]): boolean {
+  if (deck) {
+    return true;
+  }
   return true;
 }
 
-export function createWinningShuffle(): Card[] {
-  let deck = createDeck();
+export function createWinningShuffle(): CardType[] {
+  const deck = createDeck();
   let shuffledDeck = shuffle(deck);
 
   while (!isWinningDeal(shuffledDeck)) {
@@ -191,8 +172,8 @@ export function createWinningShuffle(): Card[] {
   return shuffledDeck;
 }
 
-export function dealCards(shuffledDeck: Card[]): Card[][] {
-  const tableau: Card[][] = [];
+export function dealCards(shuffledDeck: CardType[]): CardType[][] {
+  const tableau: CardType[][] = [];
 
   for (let i = 0; i < 7; i++) {
     tableau[i] = shuffledDeck.slice(0, i + 1).map((card, index) => ({
