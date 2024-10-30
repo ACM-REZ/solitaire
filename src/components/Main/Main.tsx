@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import Card from "../../components/Card/Card";
 import { createWinningShuffle, dealCards } from "../../utils/deck";
 import styles from "./Main.module.scss";
 import ControlButtons from "../ControlButtons/ControlButtons";
+import { useAppDispatch, useAppSelector } from "../../app/store";
+import { updateGameState } from "../../entities/game/model/gameSlice";
+import { CardType } from "../../entities/game/types/game";
 
 const Main = () => {
-  const [deck, setDeck] = useState(createWinningShuffle());
-  const tableau = dealCards(deck);
+  const dispatch = useAppDispatch();
+
+  const { deck, columns } = useAppSelector((state) => state.game);
+
+  useEffect(() => {
+    const newDeck = createWinningShuffle();
+    dispatch(updateGameState({ deck: newDeck }));
+
+    const newColumns = dealCards(newDeck);
+    dispatch(updateGameState({ columns: newColumns }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log(deck);
+    console.log(columns);
+  }, [deck, columns]);
 
   const handleCardClick = (stackIndex: number, cardIndex: number) => {
     console.log(`Clicked card ${cardIndex} in stack ${stackIndex}`);
